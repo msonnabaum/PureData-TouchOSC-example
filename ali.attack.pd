@@ -1,0 +1,68 @@
+#N canvas 543 84 569 596 10;
+#X floatatom 175 445 0 0 0 0 - - -;
+#X obj 119 541 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 119 515 sel 1;
+#X obj 119 487 < 220;
+#X obj 77 302 t b b 0 b;
+#X obj 54 270 sel 1;
+#X obj 55 240 < 0.1;
+#X obj 119 450 f;
+#X obj 166 375 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 143 96 sel 1;
+#X obj 55 211 t f b;
+#X obj 158 337 grab-one;
+#X obj 163 404 timer;
+#X obj 143 73 > 0.1;
+#X obj 110 46 t f f;
+#X text 205 24 this patch puts out a bang if the incoming stream of
+floats goes above the thresh (#1) and come back below the thresh within
+a given amount of time (#2);
+#X obj 110 21 inlet;
+#X obj 390 82 inlet;
+#X obj 474 95 inlet;
+#X obj 119 562 outlet;
+#X obj 247 562 outlet;
+#X floatatom 391 108 5 0 0 0 - - -;
+#X floatatom 477 119 5 0 0 0 - - -;
+#X obj 142 303 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 55 187 spigot;
+#X obj 114 172 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 115 149 1;
+#X obj 143 117 t b b;
+#X connect 1 0 19 0;
+#X connect 2 0 1 0;
+#X connect 3 0 2 0;
+#X connect 4 0 7 0;
+#X connect 4 1 8 0;
+#X connect 4 2 25 0;
+#X connect 4 3 11 1;
+#X connect 4 3 23 0;
+#X connect 5 0 4 0;
+#X connect 6 0 5 0;
+#X connect 7 0 3 0;
+#X connect 7 0 20 0;
+#X connect 8 0 12 0;
+#X connect 8 0 12 1;
+#X connect 9 0 27 0;
+#X connect 10 0 6 0;
+#X connect 11 1 8 0;
+#X connect 12 0 7 1;
+#X connect 12 0 0 0;
+#X connect 13 0 9 0;
+#X connect 14 0 24 0;
+#X connect 14 1 13 0;
+#X connect 16 0 14 0;
+#X connect 17 0 6 1;
+#X connect 17 0 13 1;
+#X connect 17 0 21 0;
+#X connect 18 0 3 1;
+#X connect 18 0 22 0;
+#X connect 24 0 10 0;
+#X connect 25 0 24 1;
+#X connect 26 0 25 0;
+#X connect 27 0 26 0;
+#X connect 27 1 11 0;

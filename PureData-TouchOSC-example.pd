@@ -1,0 +1,285 @@
+#N canvas 270 30 739 428 10;
+#X obj 472 -25 tgl 15 0 \$0-transtoggle empty empty 17 7 0 10 -262144
+-1 -1 0 1;
+#X obj 418 57 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X msg 418 84 send /1/toggle1 \$1;
+#X obj 454 115 print;
+#X msg 381 30 connect 192.168.1.5 8001;
+#X obj 381 115 sendOSC;
+#X floatatom 156 247 7 0 0 1 _X #0-wii-accX-set #0-wii-accX;
+#X floatatom 156 261 7 0 0 1 _Y #0-wii-accY-set #0-wii-accY;
+#X floatatom 156 275 7 0 0 1 _Z #0-wii-accZ-set #0-wii-accZ;
+#X obj 26 247 hsl 128 14 -1 1 0 0 \$0-iPhone-accX \$0-iPhone-accX-set
+empty -2 -8 0 10 -225271 -1 -1 6700 1;
+#X obj 26 261 hsl 128 14 -1 1 0 0 \$0-iPhone-accY \$0-iPhone-accY-set
+empty -2 -8 0 10 -225271 -1 -1 4350 1;
+#X obj 26 275 hsl 128 14 -1 1 0 0 \$0-iPhone-accZ \$0-iPhone-accZ-set
+empty -2 -8 0 10 -225271 -1 -1 5350 1;
+#X floatatom 156 295 7 0 0 1 _PITCH #0-wii-pitch-set #0-wii-pitch;
+#X obj 26 295 hsl 128 14 -3.14156 3.14159 0 0 \$0-iPhone-pitch \$0-iPhone-pitch-set
+empty -2 -8 0 10 -225280 -1 -1 10462 1;
+#X floatatom 156 309 7 0 0 1 _ROLL #0-wii-roll-set #0-wii-roll;
+#X obj 26 309 hsl 128 14 -3.14156 3.14159 0 0 \$0-iPhone-roll \$0-iPhone-roll-set
+empty -2 -8 0 10 -225280 -1 -1 12700 1;
+#X text 22 231 Acceleration (-1 to 1):;
+#X floatatom 39 -65 5 0 0 0 X #0-iPhone-accX-set -;
+#X obj 69 22 bng 40 250 50 0 empty empty empty 17 7 0 10 -1 -258113
+-4032;
+#X obj 69 -5 ms_attack;
+#X floatatom 86 -65 5 0 100 0 - - -;
+#X obj 86 -41 * 0.01;
+#X floatatom 137 -51 5 0 0 0 - - -;
+#X floatatom 186 -71 5 0 0 0 Y #0-iPhone-accY-set -;
+#X obj 216 16 bng 40 250 50 0 empty empty empty 17 7 0 10 -1 -258113
+-4032;
+#X obj 216 -11 ms_attack;
+#X floatatom 233 -71 5 0 100 0 - - -;
+#X obj 233 -47 * 0.01;
+#X floatatom 284 -57 5 0 0 0 - - -;
+#X floatatom 102 74 5 0 0 0 Z #0-iPhone-accZ-set -;
+#X obj 133 160 bng 40 250 50 0 empty empty empty 17 7 0 10 -1 -258113
+-4032;
+#X obj 133 133 ms_attack;
+#X floatatom 150 73 5 0 100 0 - - -;
+#X obj 150 97 * 0.01;
+#X floatatom 201 87 5 0 0 0 - - -;
+#X obj 295 275 knob 32 32 -4.5 4.5 0 0 empty \$0-iPhone-roll-set Roll
+0 -8 64 8 -262144 -1 -1 2748 1;
+#X obj 291 209 knob 32 32 -4.5 4.5 0 0 empty \$0-iPhone-pitch-set Pitch
+0 -8 64 8 -262144 -1 -1 2251 1;
+#X symbolatom -110 -74 10 0 0 0 Orientation #0-iPhone-orientation #0-iPhone-orientation
+;
+#N canvas 340 106 644 259 iPhone-messages 0;
+#X floatatom 23 -48 5 0 0 0 - #0-iPhone-accZ-set -;
+#X obj 23 1 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 62 2 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 23 -24 moses 0;
+#X msg 14 26 set UP;
+#X msg 72 24 set DOWN;
+#X obj 29 58 s \$0-iPhone-orientation;
+#X text 14 -69 Orientation;
+#X obj 196 -76 dumpOSC 8000;
+#X obj 314 -41 OSCroute /accxyz;
+#X obj 327 49 pack f f f;
+#N canvas 0 22 870 676 iphone_accell 0;
+#X obj 200 14 inlet;
+#X obj 348 223 unpack 0 0 0;
+#X obj 74 614 expr sqrt(pow($f1 \, 2) + pow($f2 \, 2) + pow($f3 \,
+2));
+#X obj 339 282 atan;
+#X obj 339 261 expr $f1 / $f2;
+#X obj 371 306 expr if ($f1 > 0 \, 3.14159 \, -3.14159);
+#X obj 339 333 pack 0 0 0;
+#X obj 339 355 expr if ($f3 <= 0 \, $f1 + $f2 \, $f1);
+#X obj 339 377 * -1;
+#X obj 341 117 unpack 0 0 0;
+#X text 57 516 The pitch and roll are only accurate if there are no
+extra accelerations due to hand movement. We can check if the total
+acceleration is close to gravity and only use pitch and roll in that
+case. The total acceleration is given by:;
+#X text 353 95 raw accerlation:;
+#X obj 13 223 unpack 0 0 0;
+#X obj 24 282 atan;
+#X obj 24 261 expr $f1 / $f2;
+#X obj 56 306 expr if ($f1 > 0 \, 3.14159 \, -3.14159);
+#X obj 24 333 pack 0 0 0;
+#X obj 24 355 expr if ($f3 <= 0 \, $f1 + $f2 \, $f1);
+#X obj 24 377 * -1;
+#X obj 207 580 unpack 0 0 0;
+#X obj 23 445 s \$0-iPhone-pitch-set;
+#X obj 339 446 s \$0-iPhone-roll-set;
+#X obj 340 174 s \$0-iPhone-accX-set;
+#X obj 380 156 s \$0-iPhone-accY-set;
+#X obj 420 137 s \$0-iPhone-accZ-set;
+#X obj 673 200 moses 0;
+#X floatatom 687 257 5 0 0 0 - - #0-iPhone-roll-up-set;
+#X obj 660 228 + 3.3;
+#X obj 720 227 - 3.3;
+#X floatatom 672 177 5 0 0 0 - #0-iPhone-roll-set -;
+#X text 646 286 Get Roll when orientation is up;
+#X connect 0 0 9 0;
+#X connect 0 0 12 0;
+#X connect 0 0 1 0;
+#X connect 1 0 4 0;
+#X connect 1 0 5 0;
+#X connect 1 2 4 1;
+#X connect 1 2 6 2;
+#X connect 3 0 6 0;
+#X connect 4 0 3 0;
+#X connect 5 0 6 1;
+#X connect 6 0 7 0;
+#X connect 7 0 8 0;
+#X connect 8 0 21 0;
+#X connect 9 0 22 0;
+#X connect 9 1 23 0;
+#X connect 9 2 24 0;
+#X connect 12 1 14 0;
+#X connect 12 1 15 0;
+#X connect 12 2 14 1;
+#X connect 12 2 16 2;
+#X connect 13 0 16 0;
+#X connect 14 0 13 0;
+#X connect 15 0 16 1;
+#X connect 16 0 17 0;
+#X connect 17 0 18 0;
+#X connect 18 0 20 0;
+#X connect 19 0 2 0;
+#X connect 19 1 2 1;
+#X connect 19 2 2 2;
+#X connect 25 0 27 0;
+#X connect 25 1 28 0;
+#X connect 27 0 26 0;
+#X connect 28 0 26 0;
+#X connect 29 0 25 0;
+#X restore 327 75 pd iphone_accell;
+#N canvas 0 22 391 158 scale_accell 0;
+#X obj 11 82 scale -2.3 2.3 -1 1;
+#X obj 256 82 scale -2.3 2.3 -1 1;
+#X obj 133 82 scale -2.3 2.3 -1 1;
+#X obj 99 13 inlet;
+#X obj 99 41 unpack f f f;
+#X obj 87 121 outlet;
+#X obj 133 121 outlet;
+#X obj 177 121 outlet;
+#X connect 0 0 5 0;
+#X connect 1 0 7 0;
+#X connect 2 0 6 0;
+#X connect 3 0 4 0;
+#X connect 4 0 0 0;
+#X connect 4 1 2 0;
+#X connect 4 2 1 0;
+#X restore 312 12 pd scale_accell;
+#X obj 472 7 unpack;
+#X floatatom 466 44 5 0 0 0 - - -;
+#X floatatom 506 41 5 0 0 0 - - -;
+#X obj 541 -28 print;
+#X obj 460 -56 route /1/channel_select/1/1;
+#N canvas 286 22 560 756 channel_select 0;
+#X obj 351 -1 route /1/channel_select/1/1;
+#X obj 353 99 route /1/channel_select/1/2;
+#X obj 357 213 route /1/channel_select/1/3;
+#X obj 357 325 route /1/channel_select/1/4;
+#X obj 358 424 route /1/channel_select/1/5;
+#X obj 357 518 route /1/channel_select/1/6;
+#X obj 360 614 route /1/channel_select/1/7;
+#X obj 356 709 route /1/channel_select/1/8;
+#X obj 17 -38 inlet;
+#X obj 384 23 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X obj 351 70 ms_sample_control 1;
+#X obj 387 133 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 354 156 spigot;
+#X obj 354 180 ms_sample_control 2;
+#X obj 387 243 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 354 266 spigot;
+#X obj 354 291 ms_sample_control 3;
+#X obj 393 351 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 360 374 spigot;
+#X obj 360 400 ms_sample_control 4;
+#X obj 391 447 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 358 468 spigot;
+#X obj 358 493 ms_sample_control 5;
+#X obj 393 539 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 360 560 spigot;
+#X obj 392 638 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 359 659 spigot;
+#X obj 359 683 ms_sample_control 7;
+#X obj 360 585 ms_sample_control 6;
+#X obj 390 734 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 357 755 spigot;
+#X obj 357 779 ms_sample_control 8;
+#X obj 351 46 spigot 0;
+#X connect 0 0 9 0;
+#X connect 1 0 11 0;
+#X connect 2 0 14 0;
+#X connect 3 0 17 0;
+#X connect 4 0 20 0;
+#X connect 5 0 23 0;
+#X connect 6 0 25 0;
+#X connect 7 0 29 0;
+#X connect 8 0 0 0;
+#X connect 8 0 1 0;
+#X connect 8 0 2 0;
+#X connect 8 0 3 0;
+#X connect 8 0 4 0;
+#X connect 8 0 5 0;
+#X connect 8 0 6 0;
+#X connect 8 0 7 0;
+#X connect 8 0 12 0;
+#X connect 8 0 15 0;
+#X connect 8 0 18 0;
+#X connect 8 0 21 0;
+#X connect 8 0 24 0;
+#X connect 8 0 26 0;
+#X connect 8 0 30 0;
+#X connect 8 0 32 0;
+#X connect 9 0 32 1;
+#X connect 11 0 12 1;
+#X connect 12 0 13 0;
+#X connect 14 0 15 1;
+#X connect 15 0 16 0;
+#X connect 17 0 18 1;
+#X connect 18 0 19 0;
+#X connect 20 0 21 1;
+#X connect 21 0 22 0;
+#X connect 23 0 24 1;
+#X connect 24 0 28 0;
+#X connect 25 0 26 1;
+#X connect 26 0 27 0;
+#X connect 29 0 30 1;
+#X connect 30 0 31 0;
+#X connect 32 0 10 0;
+#X restore 176 -27 pd channel_select;
+#X obj 454 121 spigot;
+#X obj 454 98 tgl 15 0 empty \$0-iPhone-channel-1 empty 17 7 0 10 -262144
+-1 -1 0 1;
+#X connect 0 0 3 0;
+#X connect 1 0 4 0;
+#X connect 2 0 5 0;
+#X connect 3 0 1 0;
+#X connect 3 1 2 0;
+#X connect 4 0 6 0;
+#X connect 5 0 6 0;
+#X connect 8 0 9 0;
+#X connect 8 0 17 0;
+#X connect 8 0 18 0;
+#X connect 9 0 12 0;
+#X connect 10 0 11 0;
+#X connect 12 0 10 0;
+#X connect 12 1 10 1;
+#X connect 12 2 10 2;
+#X connect 13 0 14 0;
+#X connect 13 1 15 0;
+#X connect 17 0 13 0;
+#X connect 17 0 16 0;
+#X connect 20 0 19 0;
+#X restore -178 -50 pd iPhone-messages;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X connect 2 0 5 0;
+#X connect 4 0 5 0;
+#X connect 17 0 19 0;
+#X connect 19 0 18 0;
+#X connect 20 0 21 0;
+#X connect 21 0 19 1;
+#X connect 22 0 19 2;
+#X connect 23 0 25 0;
+#X connect 25 0 24 0;
+#X connect 26 0 27 0;
+#X connect 27 0 25 1;
+#X connect 28 0 25 2;
+#X connect 29 0 31 0;
+#X connect 31 0 30 0;
+#X connect 32 0 33 0;
+#X connect 33 0 31 1;
+#X connect 34 0 31 2;
